@@ -2,9 +2,37 @@
   "dependencies": {
     "@types/express": "^5.0.3",
     "express": "^5.1.0",
-    "typescript": "^5.8.3"
+    "mongoose": "^8.16.3"
   },
   "devDependencies": {
-    "ts-node-dev": "^2.0.0"
-  }
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "name": "investbank",
+  "description": "Uma API de investimentos",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "app.ts",
+  "scripts": {
+    "start": "tsx watch src/app.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/herlocksholmes1888/InvestBank-API.git"
+  },
+  "keywords": [
+    "investimento",
+    "banco",
+    "financeiro",
+    "renda",
+    "fixa",
+    "variável",
+    "juros"
+  ],
+  "author": "Luisa Lopes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/herlocksholmes1888/InvestBank-API/issues"
+  },
+  "homepage": "https://github.com/herlocksholmes1888/InvestBank-API#readme"
 }

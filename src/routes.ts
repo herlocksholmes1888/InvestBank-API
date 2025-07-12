@@ -16,9 +16,9 @@ const router = express.Router();
 
     // Contas
         let accounts: Account[] = [
-            { id: 1, usuarioId: 1, tipo: "CC", saldo: 2000.00 },
-            { id: 2, usuarioId: 1, tipo: "CI", saldo: 150000.00 },
-            { id: 3, usuarioId: 2, tipo: "CC", saldo: 300000.00 }, 
+            { id: 1, usuarioId: 1, tipo: "CC", saldo: 100.00 },
+            { id: 2, usuarioId: 1, tipo: "CI", saldo: 500.00 },
+            { id: 3, usuarioId: 2, tipo: "CC", saldo: 200.00 }, 
         ];
 
     // Investimentos disponíveis
@@ -78,17 +78,19 @@ const router = express.Router();
 
     // Transferência
         router.post('/transferencia', (req, res) => {
-            const { senderId, receiverId, amount } = req.body;
+            const { senderId, senderAccountId, receiverId, receiverAccountId, amount } = req.body;
 
             const sender = accounts.find((account) => account.id === senderId);
             const receiver = accounts.find((account) => account.id === receiverId);
+            const senderAccount = accounts.find((account) => account.id === senderAccountId);
+            const receiverAccount = accounts.find((account) => account.id === receiverAccountId);
 
             // Verificações
-                if (!sender) {
+                if (!senderAccount) {
                     return res.status(404).json('Conta de origem não encontrada.');
                 }
 
-                if (!receiver) {
+                if (!receiverAccount) {
                     return res.status(404).json('Conta de destino não encontrada.');
                 }
 
@@ -97,8 +99,8 @@ const router = express.Router();
                 }
 
             // Cálculo de transferência
-                function transfer(senderAccount, receiverAccount, amount) {
-                    if (senderAccount.usuarioId === receiverAccount.usuarioId) {
+                function transfer(sender, senderAccount, receiver, receiverAccount, amount) {
+                    if (sender.usuarioId === receiver.usuarioId) {
                         senderAccount.saldo -= amount;
                     } else {
                         const fee = amount * 0.05;
@@ -110,7 +112,7 @@ const router = express.Router();
                     return senderAccount.saldo;
                 }
 
-                let currentBalance = transfer(sender, receiver, amount);
+                let currentBalance = transfer(sender, senderAccount, receiver, receiverAccount, amount);
 
                 console.log(accounts);
 

@@ -120,11 +120,15 @@ const router = express.Router();
 
             // Cálculo de transferência
                 function transfer(sender, senderAccount, receiver, receiverAccount, amount) {
-                    if (sender.usuarioId === receiver.usuarioId) {
-                        senderAccount.saldo -= amount;
+                    if(amount > senderAccount.saldo){
+                        res.status(400).json(`Saldo insuficiente! Seu saldo atual é de ${senderAccount.saldo}.`);
                     } else {
-                        const fee = amount * 0.05;
-                        senderAccount.saldo -= (amount + fee);
+                        if (sender.usuarioId === receiver.usuarioId) {
+                            senderAccount.saldo -= amount;
+                        } else {
+                            const fee = amount * 0.05;
+                            senderAccount.saldo -= (amount + fee);
+                        }
                     }
 
                     receiverAccount.saldo += amount;
@@ -135,7 +139,6 @@ const router = express.Router();
                 let currentBalance = transfer(sender, senderAccount, receiver, receiverAccount, amount);
 
                 console.log(accounts);
-
                 res.status(200).json(`Transferência realizada com sucesso! Seu saldo é de: ${currentBalance}`);
         });
 

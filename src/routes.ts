@@ -81,7 +81,14 @@ const router = app.router;
                     res.status(400).json('Saldo insuficiente.');
                 }
 
-            sender.saldo -= amount;
+            // TODO: Modificar esta lógica quando a Conta Investimentos for implementada
+            // nesta API.
+            if (sender != receiver) {
+                sender.saldo -= amount + (amount * 0.5);
+            } else {
+                sender.saldo -= amount;
+            }
+
             receiver.saldo += amount;
 
             res.status(200).json(`Transferência realizada com sucesso! Seu saldo atual: ${sender.saldo}`);

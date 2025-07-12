@@ -3,15 +3,16 @@
 // em português! 
 */
 import express from 'express'
+import { User } from './types'
 
 const app = express();
 const router = app.router;
 
 // MOCK DATA
     // Usuários
-        let users = [
-            { "id": 1, "nome": "Sherlock Holmes", "saldo": 20000.00 },
-            { "id": 2, "nome": "Aquiles Pelida", "saldo": 100000.00 }
+        let users: User[] = [
+            { id: 1, nome: "Sherlock Holmes", saldo: 20000.00 },
+            { id: 2, nome: "Aquiles Pelida", saldo: 100000.00 }
         ];
 
     // Investimentos disponíveis
@@ -27,7 +28,7 @@ const router = app.router;
         router.get('/', (req, res) => {
             res.json(users);
         });
-        
+
     // Saldo
         router.get('/saldo', (req, res) => {
             const id = req.body.id;
@@ -51,14 +52,39 @@ const router = app.router;
 
             res.status(201).json(newUser);
         });
+
     // Depósito
         router.post('/deposito', (req, res) => {
-
+            
         });
 
     // Transferência
         router.post('/transferencia', (req, res) => {
+            const { senderID, receiverID, amount } = req.body;
 
+            // Verificação de usuários
+                let sender = users.find((user) => user.id === senderID);
+                let receiver = users.find((user) => user.id === receiverID);
+
+                if(!sender) {
+                    res.status(404).json('Usuário não encontrado.');
+                }
+
+                if(!receiver) {
+                    res.status(404).json('Usuário não encontrado.');
+                }
+
+            // Verificação de saldo
+                // TODO: Descobrir uma maneira de excluir a possibilidade de sender e receiver
+                // serem undefined. Talvez implementar o type User que foi criado.
+                if(sender.saldo < amount) {
+                    res.status(400).json('Saldo insuficiente.');
+                }
+
+            sender.saldo -= amount;
+            receiver.saldo += amount;
+
+            res.status(200).json(`Transferência realizada com sucesso! Seu saldo atual: ${sender.saldo}`);
         });
 
 // DELETE

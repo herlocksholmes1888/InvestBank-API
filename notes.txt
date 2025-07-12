@@ -1,0 +1,4 @@
+PACKAGE.JSON
+    --transpile-only: Traduz TypeScript em JavaScript sem códigos intermediários, melhorando assim a performance
+
+TYPESCRIPT PERMITE A CRIAÇÃO DE CUSTOM TYPES

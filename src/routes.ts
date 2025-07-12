@@ -25,7 +25,6 @@ router.post('/', (req, res) => {
 
     users.push(newUser);
 
-    console.log(newUser);
     res.status(201).json(newUser);
 });
 
@@ -35,13 +34,22 @@ router.post('/', (req, res) => {
 
 // DELETE
 router.delete('/deletarUsuario', (req, res) => {
-    const userId = req.body;
+    const userIdToDelete = req.body.id;
 
-    const userToBeDeleted = users.findIndex((user) => user.id === userId);
+    if (!userIdToDelete) {
+        return res.status(400).json({ message: "Sem o ID, não podemos realizar a deleção do usuário." });
+    }
 
-    delete users[userToBeDeleted];
+    const initialUsersLength = users.length;
 
-    res.status(204).json(users);
+    users = users.filter(user => user.id !== userIdToDelete);
+
+    if (users.length === initialUsersLength) {
+        return res.status(404).json({ message: "Usuário não encontrado." });
+    }
+
+    console.log(users);
+    res.status(204).send();
 });
 
 export { router }

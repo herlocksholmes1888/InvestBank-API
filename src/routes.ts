@@ -24,10 +24,22 @@ const router = app.router;
 
 // GET
     // Usuários
-        router.get("/", (req, res) => {
+        router.get('/', (req, res) => {
             res.json(users);
         });
+        
     // Saldo
+        router.get('/saldo', (req, res) => {
+            const id = req.body.id;
+
+            const user = users.find((user) => user.id === id);
+
+            if(user) {
+                res.json(`Seu saldo é de: ${user.saldo}`);
+            } else {
+                res.status(404).json('Usuário não encontrado.');
+            }
+        });
 
 // POST
     // Usuário
@@ -40,8 +52,14 @@ const router = app.router;
             res.status(201).json(newUser);
         });
     // Depósito
+        router.post('/deposito', (req, res) => {
+
+        });
 
     // Transferência
+        router.post('/transferencia', (req, res) => {
+
+        });
 
 // DELETE
     // Users
@@ -63,6 +81,5 @@ const router = app.router;
             console.log(users);
             res.status(204).send();
         });
-    // Investimentos
 
 export { router }

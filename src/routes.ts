@@ -3,42 +3,48 @@
 // em português! 
 */
 import express from 'express'
-import { User } from './types'
+import { User, Account } from './types' 
 
-const app = express();
-const router = app.router;
+const router = express.Router(); 
 
 // MOCK DATA
     // Usuários
         let users: User[] = [
-            { id: 1, nome: "Sherlock Holmes", saldo: 20000.00 },
-            { id: 2, nome: "Aquiles Pelida", saldo: 100000.00 }
+            { id: 1, nome: "Sherlock Holmes" },
+            { id: 2, nome: "Aquiles Pelida" }
+        ];
+
+    // Contas
+        let accounts: Account[] = [
+            { id: 1, usuarioId: 1, tipo: "CC", saldo: 2000.00 },
+            { id: 2, usuarioId: 1, tipo: "CI", saldo: 150000.00 },
+            { id: 3, usuarioId: 2, tipo: "CC", saldo: 300000.00 }, 
         ];
 
     // Investimentos disponíveis
         let investiments = [
             { "id": 1, "nome": "Tesouro Direto", "tipo": "fixo", "preco-minimo": 150.00 },
             { "id": 2, "nome": "ACME Ações", "tipo": "variavel", "preco-minimo": 1000.00 },
-            { "id": 1, "nome": "CDB", "tipo": "fixo", "preco-minimo": 30.00 },
-            { "id": 1, "nome": "Kryptonite Ltda", "tipo": "variavel", "preco-minimo": 2000.00 },
+            { "id": 3, "nome": "CDB", "tipo": "fixo", "preco-minimo": 30.00 }, 
+            { "id": 4, "nome": "Kryptonite Ltda", "tipo": "variavel", "preco-minimo": 2000.00 }, 
         ];
 
 // GET
     // Usuários
-        router.get('/', (req, res) => {
+        router.get('/usuarios', (req, res) => { 
             res.json(users);
         });
 
     // Saldo
         router.get('/saldo', (req, res) => {
-            const id = req.body.id;
+            const accountId = req.body.accountId;
 
-            const user = users.find((user) => user.id === id);
+            const account = accounts.find((acc) => acc.id === accountId);
 
-            if(user) {
-                res.json(`Seu saldo é de: ${user.saldo}`);
+            if(account) {
+                res.json(`Seu saldo é de: ${account.saldo}`);
             } else {
-                res.status(404).json('Usuário não encontrado.');
+                res.status(404).json('Conta não encontrada.');
             }
         });
 
@@ -55,43 +61,60 @@ const router = app.router;
 
     // Depósito
         router.post('/deposito', (req, res) => {
-            
+            const { accountId, amount } = req.body;
+
+            const account = accounts.find((acc) => acc.id === accountId);
+
+            if(account) {
+                if(amount <= 0) {
+                    return res.status(400).json('O valor do depósito deve ser positivo.');
+                }
+                account.saldo += amount;
+                res.status(200).json(`Depósito realizado com sucesso! Novo saldo da conta ${accountId}: ${account.saldo}`);
+            } else {
+                res.status(404).json('Conta não encontrada.');
+            }
         });
 
     // Transferência
         router.post('/transferencia', (req, res) => {
-            const { senderID, receiverID, amount } = req.body;
+            const { senderId, receiverId, amount } = req.body;
 
-            // Verificação de usuários
-                let sender = users.find((user) => user.id === senderID);
-                let receiver = users.find((user) => user.id === receiverID);
+            const sender = accounts.find((account) => account.id === senderId);
+            const receiver = accounts.find((account) => account.id === receiverId);
 
-                if(!sender) {
-                    res.status(404).json('Usuário não encontrado.');
+            // Verificações
+                if (!sender) {
+                    return res.status(404).json('Conta de origem não encontrada.');
                 }
 
-                if(!receiver) {
-                    res.status(404).json('Usuário não encontrado.');
+                if (!receiver) {
+                    return res.status(404).json('Conta de destino não encontrada.');
                 }
 
-            // Verificação de saldo
-                // TODO: Descobrir uma maneira de excluir a possibilidade de sender e receiver
-                // serem undefined. Talvez implementar o type User que foi criado.
-                if(sender.saldo < amount) {
-                    res.status(400).json('Saldo insuficiente.');
+                if (amount <= 0) {
+                    return res.status(400).json('O valor da transferência deve ser positivo.');
                 }
 
-            // TODO: Modificar esta lógica quando a Conta Investimentos for implementada
-            // nesta API.
-            if (sender != receiver) {
-                sender.saldo -= amount + (amount * 0.5);
-            } else {
-                sender.saldo -= amount;
-            }
+            // Cálculo de transferência
+                function transfer(senderAccount, receiverAccount, amount) {
+                    if (senderAccount.usuarioId === receiverAccount.usuarioId) {
+                        senderAccount.saldo -= amount;
+                    } else {
+                        const fee = amount * 0.05;
+                        senderAccount.saldo -= (amount + fee);
+                    }
 
-            receiver.saldo += amount;
+                    receiverAccount.saldo += amount;
 
-            res.status(200).json(`Transferência realizada com sucesso! Seu saldo atual: ${sender.saldo}`);
+                    return senderAccount.saldo;
+                }
+
+                let currentBalance = transfer(sender, receiver, amount);
+
+                console.log(accounts);
+
+                res.status(200).json(`Transferência realizada com sucesso! Seu saldo é de: ${currentBalance}`);
         });
 
 // DELETE

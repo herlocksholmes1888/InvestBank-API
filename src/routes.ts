@@ -51,11 +51,32 @@ const router = express.Router();
 // POST
     // Usuário
         router.post('/criarUsuario', (req, res) => {
-            const newUser = req.body;
+            const { newUserId, newUserName } = req.body;
 
-            users.push(newUser);
+            if (!users.some(user => user.id === newUserId)) {
+                const newUser: User = { id: newUserId, nome: newUserName };
 
-            res.status(201).json(newUser);
+                users.push(newUser);
+
+                console.log(users);
+                res.status(201).json(newUser);
+            } else {
+                res.status(400).json('Um usuário com este ID já existe! Por favor, escolha outro.');
+            }
+        });
+
+    // Conta
+        router.post('/criarConta', (req, res) => {
+            const { accountId, userId, accountType } = req.body;
+            const newAccount: Account = { id: accountId, usuarioId: userId, tipo: accountType, saldo: 0 };
+
+            if(!accounts.some(account => account.id === accountId)) {
+                accounts.push(newAccount);
+
+                res.status(201).json(newAccount);
+            } else {
+                res.status(400).json('Uma conta com este ID já existe! Por favor, escolha outro.');
+            }
         });
 
     // Depósito
@@ -118,6 +139,11 @@ const router = express.Router();
                 res.status(200).json(`Transferência realizada com sucesso! Seu saldo é de: ${currentBalance}`);
         });
 
+    // Ativos
+        const brokarageFees = 0.1;
+        const variableIncomeFees = 0.22;
+        const fixedIncomeFees = 0.15;
+
 // DELETE
     // Users
     // TODO: Ao deletar um usuário, todas as contas atreladas a ele devem ser deletadas, também
@@ -130,7 +156,7 @@ const router = express.Router();
 
             const initialUsersLength = users.length;
 
-            users = users.filter(user => user.id !== userId);
+            users = users.filter((user) => user.id !== userId);
 
             if (users.length === initialUsersLength) {
                 return res.status(404).json({ message: "Usuário não encontrado." });

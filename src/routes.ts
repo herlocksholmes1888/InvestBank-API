@@ -34,6 +34,7 @@ const router = express.Router();
     // Usuários
         router.get('/usuarios', (req, res) => {
             if(users.length > 0) {
+                console.log(users);
                 res.status(200).json(users);
             } else {
                 res.status(200).json('Esta aplicação ainda não tem usuários.');
@@ -43,6 +44,7 @@ const router = express.Router();
     // Investimentos 
         router.get('/investimentos', (req, res) => {
             if(investments.length > 0){
+                console.log(investments)
                 res.status(200).json(investments);
             } else {
                 res.status(200).json('Esta aplicação ainda não tem investimentos disponíveis.');
@@ -68,7 +70,7 @@ const router = express.Router();
             const { newUserId, newUserName } = req.body;
 
             if (!users.some(user => user.id === newUserId)) {
-                const newUser: User = { id: newUserId, nome: newUserName };
+                const newUser: User = { id: parseInt(newUserId), nome: newUserName };
 
                 users.push(newUser);
 
@@ -82,7 +84,7 @@ const router = express.Router();
     // Conta
         router.post('/criarConta', (req, res) => {
             const { accountId, userId, accountType } = req.body;
-            const newAccount: Account = { id: accountId, usuarioId: userId, tipo: accountType, saldo: 0 };
+            const newAccount: Account = { id: parseInt(accountId), usuarioId: userId, tipo: accountType, saldo: 0 };
 
             if(!accounts.some(account => account.id === accountId)) {
                 accounts.push(newAccount);

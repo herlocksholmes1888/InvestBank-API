@@ -2,7 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiActionsSelect = document.getElementById('apiActions');
     const parametersContainer = document.getElementById('parametersContainer');
     const apiForm = document.getElementById('apiForm');
-    
+    const responseContainer = document.getElementById('responseContainer'); 
+
     const apiConfig = {
         'getUsuarios': {
             method: 'GET',
@@ -18,14 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'GET',
             path: '/saldo',
             params: [
-                { name: 'accountId', type: 'text', label: 'ID da Conta:' }
+                { name: 'accountId', type: 'number', label: 'ID da Conta:' }
             ]
         },
         'criarUsuario': {
             method: 'POST',
             path: '/criarUsuario',
             params: [
-                { name: 'newUserId', type: 'text', label: 'Novo ID do Usuário:' },
+                { name: 'newUserId', type: 'number', label: 'Novo ID do Usuário:' },
                 { name: 'newUserName', type: 'text', label: 'Nome do Novo Usuário:' }
             ]
         },
@@ -33,8 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             path: '/criarConta',
             params: [
-                { name: 'accountId', type: 'text', label: 'ID da Conta:' },
-                { name: 'userId', type: 'text', label: 'ID do Usuário:' },
+                { name: 'accountId', type: 'number', label: 'ID da Conta:' },
+                { name: 'userId', type: 'number', label: 'ID do Usuário:' },
                 { name: 'accountType', type: 'text', label: 'Tipo de Conta:' }
             ]
         },
@@ -42,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             path: '/deposito',
             params: [
-                { name: 'accountId', type: 'text', label: 'ID da Conta:' },
+                { name: 'accountId', type: 'number', label: 'ID da Conta:' },
                 { name: 'amount', type: 'number', label: 'Valor:' }
             ]
         },
@@ -50,34 +51,41 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             path: '/transferencia',
             params: [
-                { name: 'senderId', type: 'text', label: 'ID do Remetente:' },
-                { name: 'senderAccountId', type: 'text', label: 'ID da Conta Remetente:' },
-                { name: 'receiverId', type: 'text', label: 'ID do Destinatário:' },
-                { name: 'receiverAccountId', type: 'text', label: 'ID da Conta Destinatário:' },
+                { name: 'senderId', type: 'number', label: 'ID do Remetente:' },
+                { name: 'senderAccountId', type: 'number', label: 'ID da Conta Remetente:' },
+                { name: 'receiverId', type: 'number', label: 'ID do Destinatário:' },
+                { name: 'receiverAccountId', type: 'number', label: 'ID da Conta Destinatário:' },
                 { name: 'amount', type: 'number', label: 'Valor:' }
             ]
         },
-        'comprarAtivosFixos': {
+        'comprarAtivo': { 
             method: 'POST',
-            path: '/comprarAtivosFixos',
+            path: '/comprarAtivo',
             params: [
-                { name: 'accountId', type: 'text', label: 'ID da Conta:' },
-                { name: 'accountType', type: 'text', label: 'Tipo de Conta:' },
-                { name: 'investmentId', type: 'text', label: 'ID do Investimento:' },
+                { name: 'accountId', type: 'number', label: 'ID da Conta:' },
+                { name: 'investmentId', type: 'number', label: 'ID do Investimento:' },
                 { name: 'investmentPaidPrice', type: 'number', label: 'Preço Pago pelo Investimento:' }
+            ]
+        },
+        'resgatarAtivo': { 
+            method: 'POST',
+            path: '/resgatarAtivo',
+            params: [
+                { name: 'accountId', type: 'number', label: 'ID da Conta:' },
+                { name: 'investmentId', type: 'number', label: 'ID do Investimento:' }
             ]
         },
         'deletarUsuario': {
             method: 'DELETE',
             path: '/deletarUsuario',
             params: [
-                { name: 'userId', type: 'text', label: 'ID do Usuário a Deletar:' }
+                { name: 'id', type: 'number', label: 'ID do Usuário a Deletar:' } 
             ]
         }
     };
 
     function renderParameters(actionKey) {
-        parametersContainer.innerHTML = ''; 
+        parametersContainer.innerHTML = '';
 
         const config = apiConfig[actionKey];
         if (config && config.params) {
@@ -108,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     apiForm.addEventListener('submit', async (event) => {
-        event.preventDefault(); 
+        event.preventDefault();
 
         const selectedActionKey = apiActionsSelect.value;
         if (!selectedActionKey) {
@@ -126,24 +134,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const requestBody = {};
 
         for (const [key, value] of formData.entries()) {
-            if (key !== 'apiActions') { 
-                requestBody[key] = value;
+            if (key !== 'apiActions') {
+                const paramConfig = config.params.find(p => p.name === key);
+                if (paramConfig && paramConfig.type === 'number') {
+                    requestBody[key] = parseFloat(value);
+                } else {
+                    requestBody[key] = value;
+                }
             }
         }
 
-        let url = config.path;
+        let url = `http://localhost:3000${config.path}`; 
         let fetchOptions = {
             method: config.method,
             headers: {}
         };
 
-        // Lógica para GET e DELETE: parâmetros vão na URL (query string)
-        if (config.method === 'GET' || config.method === 'DELETE') {
+        if (config.method === 'GET') {
             const queryParams = new URLSearchParams(requestBody).toString();
             if (queryParams) {
                 url += `?${queryParams}`;
             }
-        } else { // POST: parâmetros vão no body
+        } else if (config.method === 'DELETE') {
+             fetchOptions.headers['Content-Type'] = 'application/json';
+             fetchOptions.body = JSON.stringify(requestBody);
+        }
+        else {
             fetchOptions.headers['Content-Type'] = 'application/json';
             fetchOptions.body = JSON.stringify(requestBody);
         }
@@ -152,16 +168,22 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Ação selecionada:', selectedActionKey);
         console.log('Método HTTP:', config.method);
         console.log('URL da Requisição:', url);
-        if (config.method === 'POST') {
+        if (config.method === 'POST' || config.method === 'DELETE') {
             console.log('Body da Requisição:', requestBody);
         }
-        console.log('----------------------');
 
         try {
-            alert('Requisição simulada. Verifique o console para os detalhes da requisição.');
+            const response = await fetch(url, fetchOptions);
+            const data = await response.json(); 
 
+            console.log('--- Resposta da API ---');
+            console.log('Status:', response.status);
+            console.log('Dados:', data);
+
+            responseContainer.innerHTML = JSON.stringify(data);
         } catch (error) {
             console.error('Erro ao chamar a API:', error);
+            responseContainer.innerHTML = `Erro: ${error.message}`;
             alert('Ocorreu um erro ao tentar chamar a API.');
         }
     });

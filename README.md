@@ -44,8 +44,8 @@ Visto que o Investbank foi criado durante um Hackathon, não tivemos tempo de ad
 
     POST /transferencia         senderId            senderAccountId         receiverId          receiverAccountId           amount
 
-    POST /comprarAtivosFixos            accountId           accountType            investmentId            investmentPaidPrice
-
+    POST /comprarAtivo           accountId           accountType            investmentId            investmentPaidPrice
+    POST /resgatarAtivo          accountId           investmentId
 
     DELETE /deletarUsuario          userId
 ``
@@ -64,3 +64,5 @@ npm start
 ``
 
 Para utilizar a API, abra o Postman e envie suas requisições no body, em formato JSON.
+
+Você também pode utilizar esta API através da interface gráfica. Basta rodar o comando ``npm start`` no terminal do seu editor de texto preferido e abrir o arquivo ``index.html``, que se encontra no path ``frontend/public``. No entanto, ocorrem erros ao verificar saldo e ao deletar usuários.

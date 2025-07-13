@@ -150,20 +150,15 @@ const router = express.Router();
             const fixedIncomeFees = 0.15; 
 
             const investment = investiments.find((investment) => investment.id === investmentId);
-            const account = accounts.find((account) => account.id === accountId);
+            const account = accounts.find((account) => account.id === accountId && account.tipo === "CI");
 
             if (!investment) {
                 return res.status(404).json('O ativo que você quer comprar não existe. Por favor, insira um ativo válido.');
             }
 
             if(!account) {
-                return res.status(400).json('Você está tentando comprar um ativo através de uma conta que não existe. Crie uma conta de investimentos para prosseguir com a compra.');
+                return res.status(400).json('Você está tentando comprar um ativo através de uma conta que não existe, ou através de uma conta corrente. Crie uma conta de investimentos para prosseguir com a compra.');
             }
-
-            if (accountType !== "CI") {
-                return res.status(400).json('Você está tentando comprar um ativo através de uma conta corrente. Crie uma conta de investimentos para prosseguir com a compra.');
-            }
-
 
             function amountOfInvestments(minimumPrice, paidPrice) {
                 const min = minimumPrice;
@@ -186,10 +181,14 @@ const router = express.Router();
                 const remainder = paid % min; 
 
                 if (numberOfAssets > 0) {
-                    let message = `Parabéns! Com R$${paid}, você pode comprar ${numberOfAssets} ativo(s).`;
+                    let message = `Parabéns! Com R$${paid}, você comprou ${numberOfAssets} ativo(s).`;
+                    account.saldo -= paid;
 
                     if (remainder > 0) {
-                        message += ` Sobrou R$${remainder}. Este valor não é suficiente para comprar outro ativo e foi reembolsado para a sua conta.`;
+                        message += ` Sobrou R$${remainder}. Este valor não é suficiente para comprar outro ativo e, por isso, foi estornado para a sua conta.`;
+
+                        account.saldo += remainder;
+                        console.log(accounts);
                     }
                     return {
                         error: false,
@@ -212,6 +211,7 @@ const router = express.Router();
             if (result.error) {
                 return res.status(result.statusCode).json(result.message);
             } else {
+                console.log(accounts);
                 return res.status(200).json(result.message);
             }
         });

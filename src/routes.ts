@@ -163,7 +163,9 @@ const router = express.Router();
 
                     receiverAccount.saldo += amount;
 
-                    activity.push(`${sender.nome} enviou R$${amount} para ${receiver.nome}.`);
+                    const senderName = users.find((user) => user.id === senderId);
+                    const receiverName = users.find((user) => user.id === receiverId);
+                    activity.push(`${senderName?.nome} enviou R$${amount} para ${receiverName?.nome}.`);
 
                     return senderAccount.saldo;
                 }

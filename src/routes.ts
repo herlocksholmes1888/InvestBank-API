@@ -155,13 +155,14 @@ const router = express.Router();
             const investment = investments.find((investment) => investment.id === investmentId);
             const account = accounts.find((account) => account.id === accountId && account.tipo === "CI");
 
-            if (!investment) {
-                return res.status(404).json('O ativo que você quer comprar não existe. Por favor, insira um ativo válido.');
-            }
+            // Verificações
+                if (!investment) {
+                    return res.status(404).json('O ativo que você quer comprar não existe. Por favor, insira um ativo válido.');
+                }
 
-            if(!account) {
-                return res.status(400).json('Você está tentando comprar um ativo através de uma conta que não existe, ou através de uma conta corrente. Crie uma conta de investimentos para prosseguir com a compra.');
-            }
+                if(!account) {
+                    return res.status(400).json('Você está tentando comprar um ativo através de uma conta que não existe, ou através de uma conta corrente. Crie uma conta de investimentos para prosseguir com a compra.');
+                }
 
             function amountOfInvestments(minimumPrice, paidPrice) {
                 const brokarageFee = 0.001;
@@ -220,41 +221,39 @@ const router = express.Router();
             }
         });
 
-router.post('/resgatarAtivo', (req, res) => {
-    const { accountId, investmentId, amount } = req.body;
-    const fixedInvestmentRedemptionFee = 0.15;
-    const variableInvestmentRedemptionFee = 0.22;
+        router.post('/resgatarAtivo', (req, res) => {
+            const { accountId, investmentId } = req.body;
 
-    const investment = investments.find((investment) => investment.id === investmentId);
-    const account = accounts.find((account) => account.id === accountId);
+            const investment = investments.find((investment) => investment.id === investmentId);
+            const account = accounts.find((account) => account.id === accountId && account.tipo === "CI");
 
-    if (!investment) {
-        return res.status(404).json('O ativo que você quer resgatar não existe. Por favor, insira um ativo válido.');
-    }
+            // Verificações
+                if(!investment) {
+                    res.status(404).json('O investimento informado não existe.');
+                }
 
-    if (!account) {
-        return res.status(400).json('Você está tentando resgatar um ativo através de uma conta que não existe.');
-    }
+                if(!account) {
+                    res.status(404).json('A conta não existe.');
+                }
+            
+            if(investment?.tipo === "fixo") {
+                const fixedIncomeFees = 0.15;
 
-    const valuePerAsset = investment['preco-minimo'];
-    const grossRedemptionValue = valuePerAsset * amount;
-    const redemptionFee = (investment.tipo === "fixo") ? fixedInvestmentRedemptionFee : variableInvestmentRedemptionFee;
-    const netRedemptionValue = grossRedemptionValue - redemptionFee;
+                account.saldo -= (account.saldo * fixedIncomeFees);
+                account.saldo += investment['preco-minimo'];
 
-    account.saldo += netRedemptionValue;
+                console.log(accounts);
+                res.status(200).json(`Resgate realizado! Seu saldo é de: ${account.saldo}`);
+            } else {
+                const variableIncomeFees = 0.22;
 
-    console.log('Novo saldo da conta:', account.saldo);
+                account.saldo -= (account.saldo * variableIncomeFees);
+                account.saldo += investment['preco-minimo'];
 
-    return res.status(200).json({
-        message: `Resgate de ${amount} unidade(s) do ativo ${ investment.nome } realizado com sucesso.`,
-        details: {
-            grossValue: `R$${grossRedemptionValue.toFixed(2)}`,
-            redemptionFee: `R$${redemptionFee.toFixed(2)}`,
-            netValueCredited: `R$${netRedemptionValue.toFixed(2)}`,
-            currentAccountBalance: `R$${account.saldo.toFixed(2)}`
-        }
-    });
-});
+                console.log(accounts);
+                res.status(200).json(`Resgate realizado! Seu saldo é de: ${account.saldo}`);
+            }
+        });
 
 // DELETE
     // Users

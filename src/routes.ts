@@ -143,11 +143,8 @@ const router = express.Router();
         });
 
     // Ativos
-        const brokarageFees = 0.1;
-
-        router.post('/comprarAtivosFixos', (req, res) => {
-            const { accountId, accountType, investmentId, investmentPaidPrice } = req.body;
-            const fixedIncomeFees = 0.15; 
+        router.post('/comprarAtivo', (req, res) => {
+            const { accountId, investmentId, investmentPaidPrice } = req.body;
 
             const investment = investiments.find((investment) => investment.id === investmentId);
             const account = accounts.find((account) => account.id === accountId && account.tipo === "CI");
@@ -161,7 +158,8 @@ const router = express.Router();
             }
 
             function amountOfInvestments(minimumPrice, paidPrice) {
-                const min = minimumPrice;
+                const brokarageFee = 0.001;
+                const min = minimumPrice + (minimumPrice * brokarageFee);
                 const paid = paidPrice;
 
                 if(!investment) {
@@ -216,8 +214,10 @@ const router = express.Router();
             }
         });
 
-        router.post('/comprarAtivosVariaveis', (req, res) => {
+        router.post('/resgateAtivo', (req, res) => {
+            const fixedIncomeFees = 0.15;
             const variableIncomeFees = 0.22;
+
         });
 
 // DELETE

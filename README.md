@@ -1,4 +1,4 @@
-# Seja bem-vindo_ ao Investbank 👋🏽
+# Seja bem-vind_ ao Investbank 👋🏽
 
 O Investbank é um banco fictício, criado exclusivamente para o [3º Hackathon da comunidade Orange Juice](https://github.com/orangejuicetech/orangebank). Ele foi projetado para atender a investidores que não abrem mão da praticidade ao escolherem seu banco; afinal de contas, ele já vem com uma conta de investimentos! Não há necessidade de instalar um aplicativo exclusivo da sua corretora.
 

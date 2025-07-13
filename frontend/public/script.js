@@ -184,8 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Dados:', data);
             responseContainer.innerHTML = JSON.stringify(data, null, 2); 
         } else {
-            console.log('Nenhum conteúdo na resposta (Status 204 No Content).');
-            responseContainer.innerHTML = 'Usuário deletado com sucesso (No Content).';
+            responseContainer.innerHTML = 'Usuário deletado com sucesso, assim como as contas bancárias atreladas a ele.';
         }
 
         } catch (error) {

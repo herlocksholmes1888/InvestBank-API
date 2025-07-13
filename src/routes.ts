@@ -267,9 +267,9 @@ const router = express.Router();
 
 // DELETE
     // Users
-    // TODO: Ao deletar um usuário, todas as contas atreladas a ele devem ser deletadas, também
         router.delete('/deletarUsuario', (req, res) => {
             const userId = req.body.id;
+            accounts = accounts.find((account) => account.usuarioId !== userId);
 
             if (!userId) {
                 return res.status(400).json({ message: "Sem o ID, não podemos realizar a deleção do usuário." });
@@ -284,6 +284,7 @@ const router = express.Router();
             }
 
             console.log(users);
+            console.log(accounts);
             res.status(204).send();
         });
 

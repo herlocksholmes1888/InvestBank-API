@@ -32,13 +32,21 @@ const router = express.Router();
 
 // GET
     // Usuários
-        router.get('/usuarios', (req, res) => { 
-            res.json(users);
+        router.get('/usuarios', (req, res) => {
+            if(users.length > 0) {
+                res.status(200).json(users);
+            } else {
+                res.status(200).json('Esta aplicação ainda não tem usuários.');
+            }
         });
 
     // Investimentos 
         router.get('/investimentos', (req, res) => {
-            res.json(investments);
+            if(investments.length > 0){
+                res.status(200).json(investments);
+            } else {
+                res.status(200).json('Esta aplicação ainda não tem investimentos disponíveis.');
+            }
         });
 
     // Saldo

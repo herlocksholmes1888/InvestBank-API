@@ -146,13 +146,22 @@ const router = express.Router();
         const brokarageFees = 0.1;
 
         router.post('/comprarAtivosFixos', (req, res) => {
-            const { investmentId, investmentPaidPrice } = req.body;
+            const { accountId, accountType, investmentId, investmentPaidPrice } = req.body;
             const fixedIncomeFees = 0.15; 
 
             const investment = investiments.find((investment) => investment.id === investmentId);
+            const account = accounts.find((account) => account.id === accountId);
 
             if (!investment) {
                 return res.status(404).json('O ativo que você quer comprar não existe. Por favor, insira um ativo válido.');
+            }
+
+            if(!account) {
+                return res.status(400).json('Você está tentando comprar um ativo através de uma conta que não existe. Crie uma conta de investimentos para prosseguir com a compra.');
+            }
+
+            if (accountType !== "CI") {
+                return res.status(400).json('Você está tentando comprar um ativo através de uma conta corrente. Crie uma conta de investimentos para prosseguir com a compra.');
             }
 
 

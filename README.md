@@ -43,7 +43,7 @@ Visto que o Investbank foi criado durante um Hackathon, não tivemos tempo de ad
 
     POST /transferencia         senderId            senderAccountId         receiverId          receiverAccountId           amount
 
-    POST /comprarAtivosFixos            investmentId            investmentPaidPrice
+    POST /comprarAtivosFixos            accountId           accountType            investmentId            investmentPaidPrice
 
 
     DELETE /deletarUsuario          userId

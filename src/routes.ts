@@ -220,11 +220,41 @@ const router = express.Router();
             }
         });
 
-        router.post('/resgateAtivo', (req, res) => {
-            const fixedIncomeFees = 0.15;
-            const variableIncomeFees = 0.22;
+router.post('/resgatarAtivo', (req, res) => {
+    const { accountId, investmentId, amount } = req.body;
+    const fixedInvestmentRedemptionFee = 0.15;
+    const variableInvestmentRedemptionFee = 0.22;
 
-        });
+    const investment = investments.find((investment) => investment.id === investmentId);
+    const account = accounts.find((account) => account.id === accountId);
+
+    if (!investment) {
+        return res.status(404).json('O ativo que você quer resgatar não existe. Por favor, insira um ativo válido.');
+    }
+
+    if (!account) {
+        return res.status(400).json('Você está tentando resgatar um ativo através de uma conta que não existe.');
+    }
+
+    const valuePerAsset = investment['preco-minimo'];
+    const grossRedemptionValue = valuePerAsset * amount;
+    const redemptionFee = (investment.tipo === "fixo") ? fixedInvestmentRedemptionFee : variableInvestmentRedemptionFee;
+    const netRedemptionValue = grossRedemptionValue - redemptionFee;
+
+    account.saldo += netRedemptionValue;
+
+    console.log('Novo saldo da conta:', account.saldo);
+
+    return res.status(200).json({
+        message: `Resgate de ${amount} unidade(s) do ativo ${ investment.nome } realizado com sucesso.`,
+        details: {
+            grossValue: `R$${grossRedemptionValue.toFixed(2)}`,
+            redemptionFee: `R$${redemptionFee.toFixed(2)}`,
+            netValueCredited: `R$${netRedemptionValue.toFixed(2)}`,
+            currentAccountBalance: `R$${account.saldo.toFixed(2)}`
+        }
+    });
+});
 
 // DELETE
     // Users

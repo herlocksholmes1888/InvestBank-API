@@ -50,4 +50,17 @@ Visto que o Investbank foi criado durante um Hackathon, não tivemos tempo de ad
     DELETE /deletarUsuario          userId
 ``
 
-Os parâmetros devem enviados através do corpo da requisição, em formato JSON.   
+## 🛠️ Funcionamento
+
+Baixe esse repositório na sua máquina usando:
+
+`` git clone https://github.com/herlocksholmes1888/InvestBank-API ``
+
+Em seguida, abra a aplicação no seu editor de texto de preferência e escreva estes comandos no terminal:
+
+``
+npm install
+npm start
+``
+
+Para utilizar a API, abra o Postman e envie suas requisições no body, em formato JSON.

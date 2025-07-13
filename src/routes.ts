@@ -126,7 +126,7 @@ const router = express.Router();
                         if (sender.usuarioId === receiver.usuarioId) {
                             senderAccount.saldo -= amount;
                         } else {
-                            const fee = amount * 0.05;
+                            const fee = amount * 0.005;
                             senderAccount.saldo -= (amount + fee);
                         }
                     }
@@ -144,8 +144,72 @@ const router = express.Router();
 
     // Ativos
         const brokarageFees = 0.1;
-        const variableIncomeFees = 0.22;
-        const fixedIncomeFees = 0.15;
+
+        router.post('/comprarAtivosFixos', (req, res) => {
+            const { investmentId, investmentPaidPrice } = req.body;
+            const fixedIncomeFees = 0.15; 
+
+            const investment = investiments.find((investment) => investment.id === investmentId);
+
+            if (!investment) {
+                return res.status(404).json('O ativo que você quer comprar não existe. Por favor, insira um ativo válido.');
+            }
+
+
+            function amountOfInvestments(minimumPrice, paidPrice) {
+                const min = parseFloat(minimumPrice);
+                const paid = parseFloat(paidPrice);
+
+                if(!investment) {
+                    res.status(404).json('O ativo que você quer comprar não existe. Por favor, insira um ativo válido.');
+                }
+
+                if (paid < min) {
+                    return {
+                        error: true,
+                        statusCode: 400,
+                        message: `O ativo que você quer comprar custa R$${min}. O valor R$${paid} não é o suficiente para comprá-lo.`
+                    };
+                }
+
+                // Cálculo de quantos ativos podem ser comprados
+                const numberOfAssets = Math.floor(paid / min); 
+                const remainder = paid % min; 
+
+                if (numberOfAssets > 0) {
+                    let message = `Parabéns! Com R$${paid}, você pode comprar ${numberOfAssets} ativo(s).`;
+
+                    if (remainder > 0) {
+                        message += ` Sobrou R$${remainder}. Este valor não é suficiente para comprar outro ativo.`;
+                    }
+                    return {
+                        error: false,
+                        statusCode: 200,
+                        message: message
+                    };
+                } else {
+                    // Idealmente, esta parte do código nunca vai rodar 
+                    // Mas vou deixar isso escrito aqui por precaução
+                    return {
+                        error: true,
+                        statusCode: 400,
+                        message: `O valor R$${paid} não é suficiente para comprar nem mesmo um ativo que custa R$${min}.`
+                    };
+                }
+            }
+
+            const result = amountOfInvestments(investment['preco-minimo'], investmentPaidPrice);
+
+            if (result.error) {
+                return res.status(result.statusCode).json(result.message);
+            } else {
+                return res.status(200).json(result.message);
+            }
+        });
+
+            router.post('/comprarAtivosVariaveis', (req, res) => {
+                const variableIncomeFees = 0.22;
+            });
 
 // DELETE
     // Users

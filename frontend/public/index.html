@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investbank API</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <form id="apiForm">
+        <label for="apiActions">Selecione uma ação: </label>
+        <select id="apiActions">
+            <option value="">-- Selecione --</option>
+            <option value="getUsuarios">Ver Usuários</option>
+            <option value="getInvestimentos">Ver Investimentos</option>
+            <option value="getSaldo">Ver Saldo</option>
+            <option value="criarUsuario">Criar Usuário</option>
+            <option value="criarConta">Criar Conta</option>
+            <option value="deposito">Fazer Depósito</option>
+            <option value="transferencia">Fazer Transferência</option>
+            <option value="comprarAtivosFixos">Comprar Ativo Fixo</option>
+            <option value="deletarUsuario">Deletar Usuário</option>
+        </select>
+
+        <div id="parametersContainer">
+            </div>
+
+        <button type="submit">Executar Ação</button>
+    </form>
+
+    <script src="./script.js"></script>
+</body>
+</html>

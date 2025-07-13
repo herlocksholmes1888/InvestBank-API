@@ -30,6 +30,9 @@ const router = express.Router();
             { "id": 4, "nome": "Kryptonite Ltda", "tipo": "variavel", "preco-minimo": 2000.00 }, 
         ];
 
+    // Histórico de movimentações
+        let activity = [];
+
 // GET
     // Usuários
         router.get('/usuarios', (req, res) => {
@@ -50,6 +53,16 @@ const router = express.Router();
                 res.status(200).json('Esta aplicação ainda não tem investimentos disponíveis.');
             }
         });
+
+    // Histórico de movimentações
+        router.get('/movimentacoes', (req, res) => {
+            if(activity.length > 0) {
+                console.log(activity);
+                res.status(200).json(activity);
+            } else {
+                res.status(200).json('Esta aplicação ainda não registrou nenhuma movimentação.');
+            }
+        }); 
 
     // Saldo
         router.get('/saldo', (req, res) => {
@@ -106,6 +119,7 @@ const router = express.Router();
                     return res.status(400).json('O valor do depósito deve ser positivo.');
                 }
                 account.saldo += amount;
+                activity.push(`${accountId} depositou ${amount}.`);
                 res.status(200).json(`Depósito realizado com sucesso! Novo saldo da conta ${accountId}: ${account.saldo}`);
             } else {
                 res.status(404).json('Conta não encontrada.');
@@ -148,6 +162,8 @@ const router = express.Router();
                     }
 
                     receiverAccount.saldo += amount;
+
+                    activity.push(`${sender.nome} enviou R$${amount} para ${receiver.nome}.`);
 
                     return senderAccount.saldo;
                 }
@@ -205,11 +221,13 @@ const router = express.Router();
                         account.saldo += remainder;
                         console.log(accounts);
                     }
+
                     return {
                         error: false,
                         statusCode: 200,
                         message: message
                     };
+
                 } else {
                     // Idealmente, esta parte do código nunca vai rodar 
                     // Mas vou deixar isso escrito aqui por precaução
@@ -226,6 +244,7 @@ const router = express.Router();
             if (result.error) {
                 return res.status(result.statusCode).json(result.message);
             } else {
+                activity.push(`${accountId} agora tem um ou mais investimentos do tipo ${investmentId}.`);
                 console.log(accounts);
                 return res.status(200).json(result.message);
             }
@@ -263,6 +282,8 @@ const router = express.Router();
                 console.log(accounts);
                 res.status(200).json(`Resgate realizado! Seu saldo é de: ${account.saldo}`);
             }
+
+            activity.push(`${accountId} resgatou seu ativo ${investmentId}, e agora tem R$${account.saldo} na sua CI.`);
         });
 
 // DELETE
@@ -282,6 +303,8 @@ const router = express.Router();
             if (users.length === initialUsersLength) {
                 return res.status(404).json({ message: "Usuário não encontrado." });
             }
+
+            activity.push(`O usuário ${userId}, assim como todas as contas atreladas a ele, não existem mais.`);
 
             console.log(users);
             console.log(accounts);

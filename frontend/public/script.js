@@ -15,6 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
             path: '/investimentos',
             params: []
         },
+        'getMovimentacoes': {
+            method: 'GET',
+            path: '/movimentacoes',
+            params: []
+        },
         'getSaldo': {
             method: 'GET',
             path: '/saldo',

@@ -53,9 +53,9 @@ const router = express.Router();
 
     // Saldo
         router.get('/saldo', (req, res) => {
-            const accountId = req.body.accountId;
+            const accountId = parseInt(req.query.accountId as string); 
 
-            const account = accounts.find((acc) => acc.id === accountId);
+            const account = accounts.find((account) => account.id === accountId);
 
             if(account) {
                 res.json(`Seu saldo é de: ${account.saldo}`);

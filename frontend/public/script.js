@@ -173,14 +173,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch(url, fetchOptions);
-            const data = await response.json(); 
+        const response = await fetch(url, fetchOptions);
 
-            console.log('--- Resposta da API ---');
-            console.log('Status:', response.status);
+        console.log('--- Resposta da API ---');
+        console.log('Status:', response.status);
+
+        let data;
+        if (response.status !== 204) {
+            data = await response.json();
             console.log('Dados:', data);
+            responseContainer.innerHTML = JSON.stringify(data, null, 2); 
+        } else {
+            console.log('Nenhum conteúdo na resposta (Status 204 No Content).');
+            responseContainer.innerHTML = 'Usuário deletado com sucesso (No Content).';
+        }
 
-            responseContainer.innerHTML = JSON.stringify(data);
         } catch (error) {
             console.error('Erro ao chamar a API:', error);
             responseContainer.innerHTML = `Erro: ${error.message}`;

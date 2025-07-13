@@ -22,7 +22,8 @@ const router = express.Router();
         ];
 
     // Investimentos disponíveis
-        let investiments = [
+        // TODO: Criar um algoritmo que faz com que os preços das rendas variáveis flutuem dinamicamente
+        let investments = [
             { "id": 1, "nome": "Tesouro Direto SELIC", "tipo": "fixo", "preco-minimo": 150.00 },
             { "id": 2, "nome": "ACME Investimentos", "tipo": "variavel", "preco-minimo": 1000.00 },
             { "id": 3, "nome": "CDB", "tipo": "fixo", "preco-minimo": 30.00 }, 
@@ -33,6 +34,11 @@ const router = express.Router();
     // Usuários
         router.get('/usuarios', (req, res) => { 
             res.json(users);
+        });
+
+    // Investimentos 
+        router.get('/investimentos', (req, res) => {
+            res.json(investments);
         });
 
     // Saldo
@@ -146,7 +152,7 @@ const router = express.Router();
         router.post('/comprarAtivo', (req, res) => {
             const { accountId, investmentId, investmentPaidPrice } = req.body;
 
-            const investment = investiments.find((investment) => investment.id === investmentId);
+            const investment = investments.find((investment) => investment.id === investmentId);
             const account = accounts.find((account) => account.id === accountId && account.tipo === "CI");
 
             if (!investment) {

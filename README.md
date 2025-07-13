@@ -31,7 +31,8 @@ Com esses dados, você pode brincar com a API simulando a compra de ativos. Lemb
 Visto que o Investbank foi criado durante um Hackathon, não tivemos tempo de adicionar todas as funcionalidades disponíveis em uma boa API. No entanto, focamos nestas:
 
 ``
-    GET /usuarios   
+    GET /usuarios
+    GET /investimentos   
     GET /saldo          accountId
 
 

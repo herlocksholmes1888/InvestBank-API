@@ -99,6 +99,13 @@ const router = express.Router();
             const { accountId, userId, accountType } = req.body;
             const newAccount: Account = { id: parseInt(accountId), usuarioId: userId, tipo: accountType, saldo: 0 };
 
+            const user = users.find((user) => user.id === userId);
+
+            if(!user){
+                res.status(400).json('A conta deve ser atrelada a um usuário que existe.')
+            }
+
+
             if(!accounts.some(account => account.id === accountId)) {
                 accounts.push(newAccount);
 

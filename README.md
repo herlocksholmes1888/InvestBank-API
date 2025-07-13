@@ -31,44 +31,22 @@ Com esses dados, você pode brincar com a API simulando a compra de ativos. Lemb
 Visto que o Investbank foi criado durante um Hackathon, não tivemos tempo de adicionar todas as funcionalidades disponíveis em uma boa API. No entanto, focamos nestas:
 
 ``
-    GET /usuarios
-    GET /saldo
+    GET /usuarios   
+    GET /saldo          accountId
 
-    POST /criarUsuario
-    POST /deposito
-    POST /transferencia
 
-    DELETE /deletarUsuario
+    POST /criarUsuario          newUserId           newUserName
+
+    POST /criarConta            accountId           userId          accountType
+
+    POST /deposito          accountId           amount
+
+    POST /transferencia         senderId            senderAccountId         receiverId          receiverAccountId           amount
+
+    POST /comprarAtivosFixos            investmentId            investmentPaidPrice
+
+
+    DELETE /deletarUsuario          userId
 ``
 
-Para fazer com que cada uma delas funcione, é necessário enviar requisições via Body, seguindo os seguintes formatos JSON:
-
-``
-GET /saldo -> Body: {
-    "accountId": 1
-}
-
-POST /criarUsuario -> Body: {
-    "id": 3,
-    "nome": "Fulano da Silva"
-}
-
-POST /deposito -> Body: {
-    "accountId": 1,
-    "amount": 100
-}
-
-POST /transferencia -> Body {
-    "senderId": 1,
-    "senderAccountId": 1,
-    "receiverId": 2,
-    "receiverAccountId": 2,
-    "amount": 100
-}
-
-DELETE /deletarUsuario -> Body {
-    "userId": 1
-}
-``
-
-Lembre-se de que o padrão monetário da Investbank API é reais. 
+Os parâmetros devem enviados através do corpo da requisição, em formato JSON.   

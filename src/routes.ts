@@ -157,8 +157,8 @@ const router = express.Router();
 
 
             function amountOfInvestments(minimumPrice, paidPrice) {
-                const min = parseFloat(minimumPrice);
-                const paid = parseFloat(paidPrice);
+                const min = minimumPrice;
+                const paid = paidPrice;
 
                 if(!investment) {
                     res.status(404).json('O ativo que você quer comprar não existe. Por favor, insira um ativo válido.');
@@ -180,7 +180,7 @@ const router = express.Router();
                     let message = `Parabéns! Com R$${paid}, você pode comprar ${numberOfAssets} ativo(s).`;
 
                     if (remainder > 0) {
-                        message += ` Sobrou R$${remainder}. Este valor não é suficiente para comprar outro ativo.`;
+                        message += ` Sobrou R$${remainder}. Este valor não é suficiente para comprar outro ativo e foi reembolsado para a sua conta.`;
                     }
                     return {
                         error: false,
@@ -207,9 +207,9 @@ const router = express.Router();
             }
         });
 
-            router.post('/comprarAtivosVariaveis', (req, res) => {
-                const variableIncomeFees = 0.22;
-            });
+        router.post('/comprarAtivosVariaveis', (req, res) => {
+            const variableIncomeFees = 0.22;
+        });
 
 // DELETE
     // Users
